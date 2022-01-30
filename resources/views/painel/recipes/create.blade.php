@@ -37,7 +37,7 @@
         
           <label class="col-form-label col-sm-3">Nome Receita</label>
           <div class="col-sm-9">
-            <input type="text" class="form-control @error('name') is-invalid @enderror" value="{{old('name')}}" id="name" name="name" placeholder="Nome">
+            <input type="text" class="form-control @error('item') is-invalid @enderror" value="{{old('item')}}" id="item" name="item" placeholder="Nome">
           </div>
         
       </div>
@@ -47,7 +47,7 @@
           <select class="form-control" id="category" name="category" >
             <option value="0" selected disabled>Selecionar categoria</option>
             @foreach ($categories as $category)
-            <option value="{{$category->id}}">{{$category->name}}</option>
+            <option value="{{$category->id}}" @if($category->id == old('category')) selected @endif>{{$category->name}}</option>
             @endforeach
           </select>
         </div>
@@ -63,16 +63,13 @@
           <div class="col-sm-3">
           <select class="form-control" id="measure" name="measure" >
             <option value="0" selected disabled>Selecionar Medida</option>
-            <option value="Gramas">gramas</option>
-            <option value="Quilos">quilos</option>
-            <option value="Unidade">unidade</option>
-            <option value="Litro">litro</option>
-            <option value="Mili Litro">mili litro</option>
+            @foreach ($measures as $measure)
+            <option value="{{$measure}}" @if($measure == old('measure')) Selected @endif>{{$measure}}</option>
+            @endforeach
           </select>
           </div>
         
       </div>
-
       <div class="form-group row">
 
           <label class="col-form-label col-sm-3">Custo</label>
@@ -90,7 +87,7 @@
 
           <label class="col-form-label col-sm-3">Modo de preparo</label>
           <div class="col-sm-9">
-            <textarea class="form-control @error('preparation') is-invalid @enderror" id="preparation" name="preparation" placeholder="Modo de preparo" value="{{old('preparation')}}" cols="30" rows="10"></textarea>
+            <textarea class="form-control @error('preparation') is-invalid @enderror" id="preparation" name="preparation" placeholder="Modo de preparo"  cols="30" rows="10">{{old('preparation')}}</textarea>
           
           </div>
 
@@ -102,57 +99,83 @@
       <div class="row " id="list">
         <div class="card col-sm-12">
           <div class="card-box">
-            <table class="table table-hover" id="tbList">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Qtd</th>
-                  <th>Medida</th>
-                  <th>Custo</th>
-                  <th>Ação</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="d-none">
-                  <td>
-                    <select class="form-control" name="input[]" >
-                      <option value="0" selected disabled>Selecionar item</option>
-                      @foreach ($inputs as $input)
-                      <option value="{{$input->id}}" >{{$input->item}}</option>
-                      @endforeach
-                    </select>
-                  </td>
-                <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{old('ammount')}}" placeholder="xxxx" ></td>
-                <td name="inputMeasure"></td>
-                <td name="inputCost"></td>
+            <div style="width:100%; overflow-x:auto">
+              <table class="table table-hover" id="tbList">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Qtd</th>
+                    <th>Medida</th>
+                    <th>Custo</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="d-none">
+                    <td>
+                      <select class="form-control" name="input[]" >
+                        <option value="0" selected disabled>Selecionar item</option>
+                        @foreach ($inputs as $input)
+                        <option value="{{$input->id}}" >{{$input->item}}</option>
+                        @endforeach
+                      </select>
+                    </td>
+                    <td><input type="number" class="form-control"  name="ammount[]"  placeholder="xxxx" ></td>
+                    <td><input type="text" class="form-control" data-input='measure' name="inputMeasure[]" readonly></td>
+                    <td><input type="text" class="form-control" data-input='cost' name="inputCost[]" readonly></td>
 
-                <td>
-                  <button type="button" onclick="removeItem(this)"class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Excluir ingrediente"><i class="bi bi-trash-fill"></i></i></button>
-                </td>
+                    <td>
+                      <button type="button" onclick="removeItem(this)"class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Excluir ingrediente"><i class="bi bi-trash-fill"></i></i></button>
+                    </td>
 
-                </tr>
-                <tr>
-                  <td>
-                    <select class="form-control" name="input[]" >
-                      <option value="0" selected disabled>Selecionar item</option>
-                      @foreach ($inputs as $input)
-                      <option value="{{$input->id}}" >{{$input->item}}</option>
-                      @endforeach
-                    </select>
-                  </td>
-                <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{old('ammount')}}" placeholder="xxxx" ></td>
-                <td name="inputMeasure"></td>
-                <td name="inputCost"></td>
+                  </tr>
+                  @if(old('input'))
+                    @foreach(old('input') as $key =>$oldInput)
+                    <tr>
+                    <td>
+                      <select class="form-control" name="input[]" >
+                        <option value="0" selected disabled>Selecionar item</option>
+                        @foreach ($inputs as $input)
+                        <option value="{{$input->id}}" @if($input->id == $oldInput) selected @endif>{{$input->item}}</option>
+                        @endforeach
+                      </select>
+                    </td>
+                    <td><input type="number" class="form-control"  name="ammount[]" value="{{old('ammount')[($key +1)]}}"  placeholder="xxxx" ></td>
+                    <td><input type="text" class="form-control" data-input='measure' value="{{old('inputMeasure')[($key +1)]}}" name="inputMeasure[]" readonly></td>
+                    <td><input type="text" class="form-control" data-input='cost' value="{{old('inputCost')[($key +1)]}}" name="inputCost[]" readonly></td>
 
-                <td>
-                  <button type="button" onclick="removeItem(this)"class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Excluir ingrediente"><i class="bi bi-trash-fill"></i></i></button>
-                </td>
 
-                </tr>
+                    <td>
+                      <button type="button" onclick="removeItem(this)"class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Excluir ingrediente"><i class="bi bi-trash-fill"></i></i></button>
+                    </td>
+
+                  </tr>
+                    @endforeach
+                  @else
+                  <tr>
+                    <td>
+                      <select class="form-control" name="input[]" >
+                        <option value="0" selected disabled>Selecionar item</option>
+                        @foreach ($inputs as $input)
+                        <option value="{{$input->id}}" >{{$input->item}}</option>
+                        @endforeach
+                      </select>
+                    </td>
+                    <td><input type="number" class="form-control"  name="ammount[]"  placeholder="xxxx" ></td>
+                    <td><input type="text" class="form-control" data-input='measure' name="inputMeasure[]" readonly></td>
+                    <td><input type="text" class="form-control" data-input='cost' name="inputCost[]" readonly></td>
+
+
+                    <td>
+                      <button type="button" onclick="removeItem(this)"class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Excluir ingrediente"><i class="bi bi-trash-fill"></i></i></button>
+                    </td>
+
+                  </tr>
+                  @endif
+                </tbody>
                 
-              </tbody>
-              
-            </table>
+              </table>
+            </div>
             <div class="d-flex flex-row-reverse mb-2">
               <button type="button" onclick="addItem()" class="btn btn-success">Adicionar Ingrediente <i class="bi bi-plus-lg"></i></button>
             </div>

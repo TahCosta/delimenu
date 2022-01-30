@@ -10,9 +10,9 @@
 @endsection
 @section('content')
 <div class="card">
-  <div class="card-box">
+  <div class="card-box responsive">
 
-    <table class="table table-hover">
+    <table class="table datatable table-striped table-hover nowrap" width="100%">
       <thead>
       <tr>
         <th>Nome</th>
@@ -27,15 +27,15 @@
       @foreach ($recipes as $recipe)
           <tr>
             <td>{{$recipe->item}}</td>
-            <td>{{$recipe->packsize}}</td>
+            <td>{{number_format($recipe->packsize)}}</td>
             <td>{{$recipe->measure}}</td>
-            <td>R$ {{$recipe->pack_cost}}</td>
+            <td>R$ {{number_format($recipe->pack_cost,2,',','.')}}</td>
             <td>{{$recipe->category}}</td>
 
             <td>
               <a href="{{route('recipes.edit',['recipe' => $recipe->id])}}" class="btn btn-sm btn-info">Editar</a>
 
-              <form method="POST" action="{{route('recipes.destroy',['recipe' => $recipe->id])}}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir este produto?')">
+              <form method="POST" action="{{route('recipes.destroy',['recipe' => $recipe->id])}}" class="d-inline" onsubmit="event.preventDefault(); deleteInput('Tem certeza que deseja excluir a receita {{$recipe->item}}?',this)">
                 @method('DELETE')
                 @csrf
                 <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
@@ -47,5 +47,4 @@
       </tbody>
     </table>
   </div></div>
-    {{$recipes->links()}}
 @endsection

@@ -39,7 +39,7 @@
         
           <label class="col-form-label col-sm-3">Nome Produto</label>
           <div class="col-sm-9">
-            <input type="text" class="form-control @error('name') is-invalid @enderror" value="{{$product->name}}" id="name" name="name" placeholder="Nome">
+            <input type="text" class="form-control @error('product') is-invalid @enderror" value="{{$product->product}}" id="product" name="product" placeholder="Nome">
           </div>
         
       </div>
@@ -123,6 +123,7 @@
       <div class="row " id="list">
         <div class="card col-sm-12">
           <div class="card-box">
+          <div style="width:100%; overflow-x:auto">
             <table class="table table-hover" id="tbList">
               <thead>
                 <tr>
@@ -142,11 +143,8 @@
                     </select>
                   </td>
                 <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{$item->ammount}}" placeholder="xxxx" readonly></td>
-                <td name="inputMeasure">{{$item->measure}}</td>
-                <td name="inputCost">R$ {{floatval($item->unity_cost)*floatval($item->ammount)}}</td>
-
-
-
+                <td><input type="text" class="form-control" data-input='measure' value="{{$item->measure}}" name="inputMeasure[]" readonly></td>
+                <td><input type="text" class="form-control" data-input='cost' value="R$ {{floatval($item->unity_cost)*floatval($item->ammount)}}" name="inputMeasure[]" readonly></td>
                 </tr>
                 @endforeach
               </tbody>
@@ -154,7 +152,7 @@
               </tbody>
               
             </table>
-           
+          </div>
             
           </div>
         </div>

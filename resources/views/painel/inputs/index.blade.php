@@ -35,7 +35,7 @@
             <td>
               <a href="{{route('inputs.edit',['input' => $input->id])}}" class="btn btn-sm btn-info">Editar</a>
 
-              <form method="POST" action="{{route('inputs.destroy',['input' => $input->id])}}" class="d-inline" onsubmit="event.preventDefault(); deleteInput('Tem certeza que deseja excluir este Insumo?',this)">
+              <form method="POST" action="{{route('inputs.destroy',['input' => $input->id])}}" class="d-inline" onsubmit="event.preventDefault(); deleteInput('Tem certeza que deseja excluir o insumo {{$input->item}}?',this)">
                 @method('DELETE')
                 @csrf
                 <button type="submit" class="btn btn-sm btn-danger">Excluir</button>

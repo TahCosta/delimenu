@@ -62,8 +62,8 @@ class ProfileController extends Controller
             ], [
                 'name' => ['required', 'string', 'max:100'],
                 'email' => ['required', 'email', 'max:100'],
-                'password' => ['nullable', 'string', 'min:8'],
-                'password_confirmation' => ['nullable', 'string', 'min:8']
+                'password' => ['nullable', 'string'],
+                'password_confirmation' => ['nullable', 'string']
             ]);
 
             if ($validator->fails()) {
@@ -71,7 +71,8 @@ class ProfileController extends Controller
                     ->withErrors($validator)
                     ->withInput();
             }
-            if($data['password'] !=='' ){
+            
+            if(!is_null($data['password'])){
                 if($data['password'] !== $data['password_confirmation'] || strlen($data['password'])< 8){ // alteração de senha
                     if(strlen($data['password']) < 8){
                         $validator->errors()->add('password', 'A senha deve ter, no mínimo, 8 caracteres');

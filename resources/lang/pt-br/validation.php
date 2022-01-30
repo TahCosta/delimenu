@@ -165,7 +165,8 @@ return [
         ],
         //Insumos
         'item' =>[
-            'unique' => 'Já existe outro insumo com o mesmo nome',
+            'unique' => 'Já existe outro item com o mesmo nome',
+            'required' => 'O campo nome é obrigatório',
         ],
         'packsize' => [
             'required' => 'O campo tamanho do pacote é obrigatório.',
@@ -173,8 +174,23 @@ return [
         ],
         'pack_cost' => [
             'required' => 'O campo preço do pacote é obrigatório.',
-
-        ]
+        ],
+        'measure' =>[
+            'required' => 'O campo medida é obrigatório.',
+        ],
+        'unity_cost' =>[
+            'required' => 'A lista de ingredientes é obrigatória',
+        ],
+        'yield' =>[
+            'required' => 'O rendimento é obrigatório',
+        ],
+        'sell' =>[
+            'required' => 'O preço de venda é obrigatório',
+        ],
+        'product' =>[
+            'required' => 'O nome do produto é obrigatório',
+        ],
+        
     ],
 
     /*

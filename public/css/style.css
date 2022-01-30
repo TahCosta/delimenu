@@ -6,3 +6,7 @@
 .responsive {
     padding: 10px;
 }
+
+#tbList td {
+    min-width: 150px;
+}

@@ -62,11 +62,9 @@
           <label class="col-form-label offset-md-1 offset-sm-1 col-md-2 col-sm-2">Medida</label>
           <div class="col-sm-3">
           <select class="form-control" id="measure" name="measure" >
-            <option value="gramas">gramas</option>
-            <option value="quilos">quilos</option>
-            <option value="unidade">unidade</option>
-            <option value="litro">litro</option>
-            <option value="mililitro">mililitro</option>
+          @foreach ($measures as $measure)
+            <option value="{{$measure}}" @if($measure == $item->measure) Selected @endif>{{$measure}}</option>
+            @endforeach
           </select>
           </div>
         
@@ -101,36 +99,38 @@
       <div class="row " id="list">
         <div class="card col-sm-12">
           <div class="card-box">
-            <table class="table table-hover" id="tbList">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Qtd</th>
-                  <th>Medida</th>
-                  <th>Custo</th>
-                </tr>
-              </thead>
-              <tbody>
-              <tr class="d-none"></tr>
-                @foreach($recipes as $recipe)
-                <tr>
-                  <td>
-                    <select class="form-control" name="input[]" readonly>
-                      <option value="{{$recipe->id_item}}" selected disabled >{{$recipe->item}}</option>
-                    </select>
-                  </td>
-                <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{$recipe->ammount}}" placeholder="xxxx" readonly></td>
-                <td name="inputMeasure">{{$recipe->measure}}</td>
-                <td name="inputCost">R$ {{floatval($recipe->unity_cost)*floatval($recipe->ammount)}}</td>
+            <div style="width:100%; overflow-x:auto">
+              <table class="table table-hover table-condensed" id="tbList" >
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Qtd</th>
+                    <th>Medida</th>
+                    <th>Custo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <tr class="d-none"></tr>
+                  @foreach($recipes as $recipe)
+                  <tr>
+                    <td>
+                      <select class="form-control" name="input[]" readonly>
+                        <option value="{{$recipe->id_item}}" selected disabled >{{$recipe->item}}</option>
+                      </select>
+                    </td>
+                  <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{$recipe->ammount}}" placeholder="xxxx" readonly></td>
+                  <td ><input type="text" class="form-control" data-input='measure' value="{{$recipe->measure}}" name="inputMeasure[]" readonly></td>
+                  <td ><input type="text" class="form-control" data-input='cost' value="R$ {{floatval($recipe->unity_cost)*floatval($recipe->ammount)}}" name="inputMeasure[]" readonly></td>
+                  
 
 
 
-                </tr>
-                @endforeach
-              </tbody>
-              
-            </table>
-
+                  </tr>
+                  @endforeach
+                </tbody>
+                
+              </table>
+            </div>
             
           </div>
         </div>

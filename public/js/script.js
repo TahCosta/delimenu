@@ -1,39 +1,41 @@
 function carregaItem(item, select) {
-    let costitem, dataajax;
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    const formData = {
-        id: item,
-    };
+    return new Promise((resolve, reject) => {
 
-    $.ajax({
-        type: "GET",
-        url: "{!! route('recipes.show') !!}",
-        data: formData,
-        dataType: 'json',
-        success: function(data) {
-            dataajax = data;
-            costitem = data.unity_cost;
-            $(select).children('[name=inputMeasure]').html(data.measure);
-            if ($(select).children('td').children('[name=ammount]').val() > 0) {
-                $(select).children('[name=inputCost]').html("R$ " + (parseFloat($(select).children('td').children('[name=ammount]').val()) * parseFloat(data.unity_cost)).toFixed(4));
-                if ($('#yield').length > 0) { // página receitas
-                    getRecipeCosts();
-                }
-            } else {
-                $(select).children('td').children('[name=ammount]').val('');
-                $(select).children('[name=inputCost]').html('R$ 0,0000');
+
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
             }
-            $(select).children('[name=inputCost]').attr('data-cost', data.unity_cost);
-        },
-        error: function(data) {
-            console.log(data);
-        }
-    });
+        });
+        const formData = {
+            id: item,
+        };
 
+        $.ajax({
+            type: "GET",
+            url: "{!! route('recipes.show') !!}",
+            data: formData,
+            dataType: 'json',
+            success: function(data) {
+                $(select).children('td').children('[data-input=measure]').val(data.measure);
+                if ($(select).children('td').children('[name=ammount]').val() > 0) {
+                    $(select).children('td').children('[data-input=cost]').val("R$ " + (parseFloat($(select).children('td').children('[name=ammount]').val()) * parseFloat(data.unity_cost)).toFixed(4));
+                    if ($('#yield').length > 0) { // página receitas
+                        getRecipeCosts();
+                    }
+                } else {
+                    $(select).children('td').children('[name=ammount]').val('');
+                    $(select).children('td').children('[data-input=cost]').val('R$ 0,0000');
+                }
+                $(select).children('td').children('[data-input=cost]').attr('data-cost', data.unity_cost);
+                resolve(data);
+            },
+            error: function(data) {
+                reject(data);
+            }
+        });
+    });
 }
 
 function addItem() {
@@ -51,12 +53,12 @@ function removeItem(item) {
 
 function getRecipeCosts() {
     let totalCost = 0
-    $('#tbList tr td[name=inputCost]').each(function(key, value) {
-        if ($(value).html().length > 0) {
-            totalCost += parseFloat($(value).html().substring(3));
+    $('#tbList tr td input[data-input=cost]').each(function(key, value) {
+        if ($(value).val().length > 0) {
+            totalCost += parseFloat($(value).val().substring(3));
         }
     });
-    $('#pack_cost').val('R$ ' + totalCost.toFixed(4));
+    $('#pack_cost').val('R$ ' + totalCost.toFixed(2));
     if ($('#measure option:selected').val() !== 0 && $("#yield").val() !== '') { //medida e unidade preenchidos
         $('#unity_cost').val('R$ ' + (parseFloat(totalCost / $("#yield").val()).toFixed(4)));
     } else {
@@ -66,9 +68,9 @@ function getRecipeCosts() {
 
 function getProfitValue() {
     let totalCost = 0
-    $('#tbList tr td[name=inputCost]').each(function(key, value) {
-        if ($(value).html().length > 0) {
-            totalCost += parseFloat($(value).html().substring(3));
+    $('#tbList tr td input[data-input=cost]').each(function(key, value) {
+        if ($(value).val().length > 0) {
+            totalCost += parseFloat($(value).val().substring(3));
         }
     });
     $('#cost').val('R$ ' + totalCost.toFixed(4));
@@ -92,10 +94,15 @@ function onEvents() {
         const val = $(this).val(); // id do item
         carregaItem(val, $(this).parent().parent());
     })
-    $("#tbList input").on('keyup', function() {
+    $("#tbList input").on('keyup', async function() {
         if ($(this).parent().parent().children('td').children('select').val() !== null) {
-            let inputCost = $(this).parent().parent().children('[name=inputCost]');
-            inputCost.html('R$ ' + (parseFloat(inputCost.attr('data-cost')) * $(this).val()).toFixed(4));
+            let inputCost = $(this).parent().parent().children('td').children('[data-input=cost]');
+            let i = 0
+            while (!inputCost.attr('data-cost') && i < 30) {
+                await sleep(500);
+                i++
+            }
+            inputCost.val('R$ ' + (parseFloat(inputCost.attr('data-cost')) * $(this).val()).toFixed(4));
             if ($('#yield').length > 0) { // página receitas
                 getRecipeCosts();
             }
@@ -136,15 +143,20 @@ function deleteInput(message, form) {
     }).then((result) => {
         if (result.isConfirmed) {
             form.submit();
-            Swal.fire('Fornecedor Excluido!', '', 'success')
+            Swal.fire('Item Excluido!', '', 'success')
 
         }
     })
 }
 
-
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 $(document).ready(function($) {
+    if ($('#yield').length > 0 && $('td input:first').attr('readonly') == 'readonly') {
+        getRecipeCosts();
+    }
     onEvents();
     $('#yield').on('keyup', getRecipeCosts)
     $('#sell').on('keyup', getProfitValue)

@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Painel;
 
 use App\Models\User;
 use App\Models\Input;
+use App\Models\Recipe;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\Recipe;
 use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller
@@ -27,19 +28,24 @@ class RecipeController extends Controller
     {
         $loggedId = intval(Auth::id());
         $user = User::find($loggedId);
+        $column = $where ='';
         if(is_null($user->company_id)){
-            $recipes = DB::table('inputs')
-            ->leftJoin('categories', 'inputs.category_id', '=', 'categories.id')
-            ->select('inputs.*', 'categories.name as category')
-            ->where('inputs.type','=','0')
-            ->where('inputs.user_id','=',$loggedId)->paginate(10);
-        }else{
-            $recipes = DB::table('inputs')
-            ->leftJoin('categories', 'inputs.category_id', '=', 'categories.id')
-            ->select('inputs.*', 'categories.name as category')
-            ->where('inputs.type','=','0')
-            ->where('inputs.company_id','=',$user->company_id)->paginate(10);
+            $column = 'inputs.user_id';
+            $where = $loggedId;
+        } else{
+            $column = 'inputs.company_id';
+            $where = $user->company_id; 
         }
+    
+            $recipes = DB::table('inputs')
+            ->leftJoin('categories', 'inputs.category_id', '=', 'categories.id')
+            ->select('inputs.item','inputs.id','inputs.measure','inputs.packsize', 'categories.name as category',(DB::raw('(SELECT sum(r.ammount*i.unity_cost) as cost
+            FROM recipes r, inputs i
+            where i.id = r.id_item
+            group by r.id_input) as pack_cost' )))
+            ->where('inputs.type','=','0')
+            ->where($column,'=',$where)->get();
+        
         
 
         return view('painel.recipes.index', [
@@ -66,10 +72,14 @@ class RecipeController extends Controller
             ->where('company_id','=',$user->company_id)->get();
             $inputs = Input::where('company_id','=',$user->company_id)->get();
         }
+        $measures = [
+            'Gramas','Quilos','Unidade','Litro','Mililitro'
+        ];
         
         return view('painel.recipes.create', [
             'categories' => $categories,
-            'inputs' => $inputs
+            'inputs' => $inputs,
+            'measures' => $measures
         ]);
     }
 
@@ -85,32 +95,50 @@ class RecipeController extends Controller
 
         array_shift($data['ammount']);
 
-        
-        $request->request->remove('ammount');
-        $request->request->remove('input');
-        $request->validate([
-           
-            'name' => ['required', 'string', 'max:100'],
-            'measure' => ['required', 'string'],
-            'unity_cost' => ['required', 'string'],
-            'pack_cost' => ['required', 'string'],
-            'category' => ['required','integer'],
-            'yield' => ['required','integer']
-        ]);
-        $null = [];
-        $null = array_filter($data['input'],fn($value) => is_null($value) && $value == '');
-        if(count($null) >0){
-            $error['input'] = 'O campo item não pode ser vazio'; 
+        $loggedId = intval(Auth::id());
+        $user = User::find($loggedId);
+        $column = $where = '';
+        if(!is_null($user->company_id)){
+            $column = 'company_id';
+            $where = $user->company_id;
+        }else{
+            $column = 'user_id';
+            $where = $loggedId;
         }
 
+        //$request->request->remove('ammount');
+        //$request->request->remove('input');
+        $request->validate([
+           
+            'item' => ['required', 'string', 'max:100',Rule::unique('inputs')->where(function ($query) use ($column,$where) {
+                return $query->where($column, $where)->where('type','=',0);
+            })],
+            'measure' => ['required', 'string'],
+            'unity_cost' => ['nullable', 'string'],
+            'pack_cost' => ['nullable', 'string'],
+            'category' => ['nullable','integer'],
+            'yield' => ['required','integer'],
+            'ammount' =>['array'],
+            'input' =>['nullable','array'],
+        ]);
+        $null = [];
+        if(!isset($data['input'])){
+            $error['input'] = 'A lista de ingredientes é obrigatória'; 
+        }else{
+            $null = array_filter($data['input'],fn($value) => is_null($value) && $value == '');
+            if(count($null) >0){
+                $error['input'] = 'O campo item não pode ser vazio'; 
+            }
+            $unique = array_unique($data['input']);
+            if(count($unique) !== count($data['input'])){
+                $error['duplicated'] = 'O campo item não pode ter ingredientes duplicados'; 
+            }
+        }
         $null = array_filter($data['ammount'],fn($value) => is_null($value) && $value == '');
         if(count($null) > 0){
             $error['ammount'] = 'O campo quantidade não pode ser vazio'; 
         }
-        $unique = array_unique($data['input']);
-        if(count($unique) !== count($data['input'])){
-            $error['duplicated'] = 'O campo item não pode ter ingredientes duplicados'; 
-        }
+        
         
         if(isset($error)){
             
@@ -124,7 +152,7 @@ class RecipeController extends Controller
         $user = User::find($loggedId);
         //Colocar na tabela de inputs o total
         $input = new Input;
-        $input->item = $request->name;
+        $input->item = $request->item;
         $input->measure =  $request->measure;
         $input->packsize =  $request->yield;
         $input->pack_cost =  (float) substr($request->pack_cost,3);
@@ -200,11 +228,15 @@ class RecipeController extends Controller
                 ->get();
                
         }
+        $measures = [
+            'Gramas','Quilos','Unidade','Litro','Mililitro'
+        ];
         
          return view('painel.recipes.edit', [
             'recipes' => $recipes,
             'item' => $item,
-            'categories' => $categories
+            'categories' => $categories,
+            'measures' => $measures
             
         ]); 
     }
@@ -231,6 +263,9 @@ class RecipeController extends Controller
             'yield' => ['required','numeric'],
             'preparation' => ['string']
         ]);
+
+
+
         $input = Input::find($id);
         $input->item = $request->item;
         $input->measure = $request->measure;
@@ -253,9 +288,12 @@ class RecipeController extends Controller
      */
     public function destroy($id)
     {
-        $recipe = Recipe::find($id);
-        $recipe->delete();
-
+        if(!empty($id)){
+            $recipe = Recipe::find($id);
+            $input = Input::where('id','=',$recipe->id_input);
+            $input->delete();
+            $recipe->delete();
+        }
         return redirect()->route('recipes.index');
     }
 }

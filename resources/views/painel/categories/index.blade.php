@@ -41,7 +41,7 @@
             <td>
               <a href="{{route('category.edit',['category' => $category->id])}}" class="btn btn-sm btn-info">Editar</a>
 
-              <form method="POST" action="{{route('category.destroy',['category' => $category->id])}}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?')">
+              <form method="POST" action="{{route('category.destroy',['category' => $category->id])}}" class="d-inline"  onsubmit="event.preventDefault(); deleteInput('Tem certeza que deseja excluir a categoria {{$category->name}}?',this)">
                 @method('DELETE')
                 @csrf
                 <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
@@ -73,7 +73,7 @@
             <td>
               <a href="{{route('category.edit',['category' => $category->id])}}" class="btn btn-sm btn-info">Editar</a>
 
-              <form method="POST" action="{{route('category.destroy',['category' => $category->id])}}" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?')">
+              <form method="POST" action="{{route('category.destroy',['category' => $category->id])}}" class="d-inline" onsubmit="event.preventDefault(); deleteInput('Tem certeza que deseja excluir a categoria {{$category->name}}?',this)">
                 @method('DELETE')
                 @csrf
                 <button type="submit" class="btn btn-sm btn-danger">Excluir</button>

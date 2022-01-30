@@ -33,7 +33,7 @@
               <td>
                 <a href="{{route('providers.edit',['provider' => $provider->id])}}" class="btn btn-sm btn-info">Editar</a>
 
-                <form method="POST" action="{{route('providers.destroy',['provider' => $provider->id])}}" class="d-inline" onsubmit="event.preventDefault(); deleteInput('Tem certeza que deseja excluir este Fornecedor?',this)">
+                <form method="POST" action="{{route('providers.destroy',['provider' => $provider->id])}}" class="d-inline" onsubmit="event.preventDefault(); deleteInput('Tem certeza que deseja excluir o fornecedor {{$provider->provider}}?',this)">
                   @method('DELETE')
                   @csrf
                   <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
