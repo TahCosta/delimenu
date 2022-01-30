@@ -8,6 +8,7 @@ use App\Models\Recipe;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -29,11 +30,14 @@ class ProductController extends Controller
         $loggedId = intval(Auth::id());
         $user = User::find($loggedId);
         if(is_null($user->company_id)){
-            $products = Product::where('user_id','=',$loggedId)
-            ->paginate(10);
+            $products = DB::table('products')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->select('products.cost','products.pdv','products.product','products.id','products.type','products.sell', 'categories.name as category')
+            ->where('products.user_id','=',$loggedId)
+            ->get();
         }else{
             $products = Product::where('company_id','=',$user->company_id)
-            ->paginate(10);
+            ->get();
         }
         
         return view('painel.products.index', [
@@ -77,29 +81,47 @@ class ProductController extends Controller
     {
         $data = $request->only(['ammount','input']);
         array_shift($data['ammount']);
-        $request->request->remove('ammount');
-        $request->request->remove('input');
+        $loggedId = intval(Auth::id());
+        $user = User::find($loggedId);
+        $column = $where = '';
+        if(!is_null($user->company_id)){
+            $column = 'company_id';
+            $where = $user->company_id;
+        }else{
+            $column = 'user_id';
+            $where = $loggedId;
+        }
+
         $request->validate([
            
-            'name' =>           ['required', 'string', 'max:100'],
+            'product' =>        ['required', 'string', 'max:100',Rule::unique('products')->where(function ($query) use ($column,$where) {
+                return $query->where($column, $where);
+            })],
             'category' =>       ['required','integer'],
             'type' =>           ['required','string'],
             'sell' =>           ['required', 'string', 'regex:/^(?:[1-9]\d+|\d)(?:\,\d+|\d)?$|^(?:[1-9]\d+|\d)(?:\.\d+|\d)?$/m'],
             'cost' =>           ['required','string'],
+            'ammount' =>        ['array'],
+            'input' =>          ['nullable','array'],
         ]);
         $null = [];
-        $null = array_filter($data['input'],fn($value) => is_null($value) && $value == '');
-        if(count($null) >0){
-            $error['input'] = 'O campo item não pode ser vazio'; 
+        if(!isset($data['input'])){
+            $error['input'] = 'A lista de ingredientes é obrigatória'; 
+        }else{
+            $null = array_filter($data['input'],fn($value) => is_null($value) && $value == '');
+            if(count($null) >0){
+                $error['input'] = 'O campo item não pode ser vazio'; 
+            }
+            $unique = array_unique($data['input']);
+            if(count($unique) !== count($data['input'])){
+                $error['duplicated'] = 'O campo item não pode ter duplicados'; 
+            }
+
         }
 
         $null = array_filter($data['ammount'],fn($value) => is_null($value) && $value == '');
         if(count($null) > 0){
             $error['ammount'] = 'O campo quantidade não pode ser vazio'; 
-        }
-        $unique = array_unique($data['input']);
-        if(count($unique) !== count($data['input'])){
-            $error['duplicated'] = 'O campo item não pode ter duplicados'; 
         }
         
         if(isset($error)){
@@ -114,7 +136,7 @@ class ProductController extends Controller
         $user = User::find($loggedId);
         //Colocar na tabela de insumos o total
         $product = new Product;
-        $product->name = $request->name;
+        $product->product = $request->product;
         $product->pdv = $request->pdv;
         $product->category_id = $request->category;
         $product->type = $request->type; 
@@ -197,7 +219,7 @@ class ProductController extends Controller
         
         $request->validate([
            
-            'name' => ['required', 'string', 'max:100'],
+            'product' => ['required', 'string', 'max:100'],
             'pdv' => ['integer'],
             'type' => ['required', 'string'],
             'cost' => ['required', 'string'],
@@ -207,7 +229,7 @@ class ProductController extends Controller
         ]);
         $request->sell = preg_replace('/,/', '.', $request->sell);
         $product = Product::find($id);
-        $product->name = $request->name;
+        $product->product = $request->product;
         $product->pdv = $request->pdv;
         $product->type =  $request->type;
         $product->sell = $request->sell;
@@ -228,9 +250,12 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Product::find($id);
-        $product->delete();
-
+        if(!empty($id)){
+            $product = Product::find($id);
+            $recipe = Recipe::where('id_input', '=',$id);
+            $recipe->delete();
+            $product->delete();
+        }
         return redirect()->route('products.index');
     }
 

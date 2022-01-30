@@ -225,8 +225,11 @@ class ProviderController extends Controller
      */
     public function destroy($id)
     {
-        $provider = Provider::find($id);
-        $provider->delete();
+        if(!empty($id)){
+            $provider = Provider::find($id);
+            $provider->delete();
+
+        }
 
         return redirect()->route('providers.index');
     }

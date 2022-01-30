@@ -205,8 +205,10 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        $category = Category::find($id);
-        $category->delete();
+        if(!empty($id)){
+            $category = Category::find($id);
+            $category->delete();
+        }
         return redirect()->route('category.index');
     }
 }

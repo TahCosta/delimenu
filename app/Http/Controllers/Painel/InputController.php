@@ -313,9 +313,12 @@ class InputController extends Controller
      */
     public function destroy($id)
     {
-        $input = Input::find($id);
-        $input->delete();
-        Stock::where('item_id', '=', $id)->delete();
+        if(!empty($id)){
+            $input = Input::find($id);
+            $input->delete();
+            Stock::where('item_id', '=', $id)->delete();
+
+        }
 
         return redirect()->route('inputs.index');
     }
