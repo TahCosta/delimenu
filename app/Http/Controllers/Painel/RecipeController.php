@@ -36,17 +36,13 @@ class RecipeController extends Controller
             $column = 'inputs.company_id';
             $where = $user->company_id; 
         }
-    
+
             $recipes = DB::table('inputs')
             ->leftJoin('categories', 'inputs.category_id', '=', 'categories.id')
-            ->select('inputs.item','inputs.id','inputs.measure','inputs.packsize', 'categories.name as category',(DB::raw('(SELECT sum(r.ammount*i.unity_cost) as cost
-            FROM recipes r, inputs i
-            where i.id = r.id_item
-            group by r.id_input) as pack_cost' )))
+            ->select('inputs.item','inputs.id','inputs.measure','inputs.packsize', 'categories.name as category','inputs.pack_cost')
             ->where('inputs.type','=','0')
-            ->where($column,'=',$where)->get();
-        
-        
+            ->where($column,'=',$where)
+            ->orderBy('inputs.id')->get();
 
         return view('painel.recipes.index', [
             'recipes' => $recipes
@@ -73,7 +69,7 @@ class RecipeController extends Controller
             $inputs = Input::where('company_id','=',$user->company_id)->get();
         }
         $measures = [
-            'Gramas','Quilos','Unidade','Litro','Mililitro'
+            'Gramas','Quilos','Unidades','Litros','Mililitros'
         ];
         
         return view('painel.recipes.create', [
@@ -201,35 +197,32 @@ class RecipeController extends Controller
     {
         $loggedId = intval(Auth::id());
         $user = User::find($loggedId);
-        if(is_null($user->company_id)){
+        $column = $where = '';
+        if(!is_null($user->company_id)){
+            $column = 'company_id';
+            $where = $user->company_id;
+        }else{
+            $column = 'user_id';
+            $where = $loggedId;
+        }
+        
             $recipes = DB::table('inputs')
             ->leftJoin('recipes', 'inputs.id', '=', 'recipes.id_item')
             ->select('item','recipes.ammount as ammount','id_item','measure','unity_cost')
             ->whereNotNull('recipes.id_item')
             ->where('recipes.id_input','=',$id)
-            ->where('inputs.user_id','=',$loggedId)->get();
+            ->where('inputs.type', '=',0)
+            ->where('inputs.'.$column,'=',$where)->get();
+
             $item = Input::where('id','=',intval($id))
-            ->where('inputs.user_id','=',$loggedId)->first();
+            ->where('inputs.'.$column,'=',$where)->first();
+
             $categories = Category::where('type', '=', 'input')
-            ->where('user_id','=',$loggedId)->get();
+            ->where($column,'=',$where)->get();
             
-        }else{
-            $recipes = DB::table('inputs')
-            ->leftJoin('recipes', 'inputs.id', '=', 'recipes.id_item')
-            ->select('item','recipes.ammount as ammount','id_item','measure','unity_cost')
-            ->whereNotNull('recipes.id_item')
-            ->where('inputs.company_id','=',$user->company_id)->get();
-
-            $item = Input::where('id','=',intval($id))
-            ->where('inputs.company_id','=',$user->company_id)->first();
-
-            $categories = Category::where('type', '=', 'input')
-                ->where('company_id','=',$user->company_id)                
-                ->get();
-               
-        }
+      
         $measures = [
-            'Gramas','Quilos','Unidade','Litro','Mililitro'
+            'Gramas','Quilos','Unidades','Litros','Mililitros'
         ];
         
          return view('painel.recipes.edit', [

@@ -56,7 +56,7 @@
         
           <label class="col-form-label col-sm-3">Rendimento</label>
           <div class="col-sm-3">
-            <input type="number" class="form-control @error('yield') is-invalid @enderror" id="yield" name="yield" value="{{$item->packsize}}" placeholder="xxxx">
+            <input type="number" step="0.01" class="form-control @error('yield') is-invalid @enderror" id="yield" name="yield" value="{{$item->packsize}}" placeholder="xxxx">
           </div>
 
           <label class="col-form-label offset-md-1 offset-sm-1 col-md-2 col-sm-2">Medida</label>
@@ -118,7 +118,7 @@
                         <option value="{{$recipe->id_item}}" selected disabled >{{$recipe->item}}</option>
                       </select>
                     </td>
-                  <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{$recipe->ammount}}" placeholder="xxxx" readonly></td>
+                  <td><input type="number" step="0.01" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{$recipe->ammount}}" placeholder="xxxx" readonly></td>
                   <td ><input type="text" class="form-control" data-input='measure' value="{{$recipe->measure}}" name="inputMeasure[]" readonly></td>
                   <td ><input type="text" class="form-control" data-input='cost' value="R$ {{floatval($recipe->unity_cost)*floatval($recipe->ammount)}}" name="inputMeasure[]" readonly></td>
                   

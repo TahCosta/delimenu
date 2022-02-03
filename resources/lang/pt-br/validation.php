@@ -190,6 +190,9 @@ return [
         'product' =>[
             'required' => 'O nome do produto é obrigatório',
         ],
+        'address' =>[
+            'required' => 'O campo endereço é obrigatório',
+        ],
         
     ],
 

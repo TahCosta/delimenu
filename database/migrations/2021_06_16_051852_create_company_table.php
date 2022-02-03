@@ -18,9 +18,10 @@ class CreateCompanyTable extends Migration
             $table->string('name');
             $table->string('address');
             $table->string('email');
-            $table->integer('cpf_cnpj');
-            $table->integer('phone');
+            $table->string('cnpj');
+            $table->string('phone')->nullable();
             $table->string('plan');
+            $table->date('plan_expires')->nullable();
             $table->integer('user_id');
             $table->timestamps();
         });
