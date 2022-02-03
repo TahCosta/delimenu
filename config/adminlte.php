@@ -275,39 +275,53 @@ return [
             'icon'        => 'fas fa-fw fa-industry',
         ],
         [
-            'text'        => 'Vendas',
+            'text'        => 'PDV',
             'icon'        => 'fas fa-fw fa-cash-register',
-            'can'         => 'edit-company',
+            'can'         => 'edit',
             'submenu'     => [
 
                 [
                     'text'        => 'Caixa',
-                    'route' => ['inputs.index', ['type' => 'input']],
+                    'url'         => 'painel/cash',
                     'icon'        => 'fas fa-fw fa-chevron-right',
                 ],
-                [
-                    'text'        => 'Pedidos',
-                    'route'       => ['inputs.index', ['type' => 'input']],
-                    'icon'        => 'fas fa-fw fa-chevron-right',
-                ], 
+                
                 [
                     'text'        => 'Clientes',
                     'url'         => 'painel/customers',
-                    'icon'        => 'fas fa-fw fa-chevron-right',
+                    'icon'        => 'fas fa-fw fa-users',
                 ],
-                [
-                    'text'        => 'Configurações',
-                    'route'       => ['inputs.index', ['type' => 'input']],
-                    'icon'        => 'fas fa-fw fa-chevron-right',
-                ], 
+                
             ],
 
         ],
-
+        [
+            'text'        => 'Delivery',
+            'icon'        => 'fas fa-fw fa-archive',
+            'can'         => 'edit',
+            'submenu'     => [
+                [
+                    'text'        => 'Pedidos',
+                    'url'         => 'painel/delivery/orders',
+                    'icon'        => 'fas fa-fw fa-chevron-right',
+                ], 
+                [
+                    'text'        => 'Painel Delivery',
+                    'url'         => 'painel/delivery',
+                    'icon'        => 'fas fa-fw fa-chevron-right',
+                ], 
+            ],
+        ],
         [
             'text'        => 'Categorias',
             'url'         => 'painel/category',
             'icon'        => 'fas fa-fw fa-archive',
+        ],
+        [
+            'text'        => 'Configurações',
+            'url'         => 'painel/settings',
+            'icon'        => 'fas fa-fw fa-cogs',
+            'can'         => 'edit-company',
         ],
 
         ['header' => 'Minha Conta'],
@@ -317,10 +331,10 @@ return [
             'icon' => 'fas fa-fw fa-user',
         ],
         [
-            'text'        => 'Empresa',
+            'text'        => 'Minha Empresa',
             'url'         => 'painel/company',
             'icon'        => 'fas fa-fw fa-store-alt',
-            'can'         => 'edit-company',
+            
         ],
         [
             'text'        => 'Funcionários',

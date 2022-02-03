@@ -27,8 +27,8 @@
       @foreach ($inputs as $input)
           <tr>
             <td>{{$input->item}}</td>
-            <td>{{$input->packsize}} {{$input->measure}}</td>
-            <td>R$ {{$input->pack_cost}}</td>
+            <td>{{number_format($input->packsize)}} {{$input->measure}}</td>
+            <td>R$ {{number_format($input->pack_cost,2,',','.')}}</td>
             <td>{{$input->category_id == 0 ?'Sem Categoria': $input->category}}</td>
             <td>{{$input->provider_id == 0 ?'Sem Fornecedor': $input->provider}}</td>
           

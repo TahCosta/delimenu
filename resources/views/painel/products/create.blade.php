@@ -82,7 +82,7 @@
         
           <label class="col-form-label col-sm-3">Preço de venda</label>
           <div class="col-sm-3">
-            <input type="number" class="form-control @error('sell') is-invalid @enderror" id="sell" name="sell" value="{{old('sell')}}" placeholder="xx,xx">
+            <input type="number" step="0.01" class="form-control @error('sell') is-invalid @enderror" id="sell" name="sell" value="{{old('sell')}}" placeholder="xx,xx">
           </div>
 
           <label class="col-form-label offset-md-1 offset-sm-1 col-md-2 col-sm-2">Preço Custo</label>
@@ -142,7 +142,7 @@
                       @endforeach
                     </select>
                   </td>
-                  <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{old('ammount[]')}}" placeholder="xxxx" ></td>
+                  <td><input type="number" step="0.01" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{old('ammount[]')}}" placeholder="xxxx" ></td>
                   <td><input type="text" class="form-control" data-input='measure' name="inputMeasure[]" readonly></td>
                   <td><input type="text" class="form-control" data-input='cost' name="inputCost[]" readonly></td>
 
@@ -163,7 +163,7 @@
                         @endforeach
                       </select>
                     </td>
-                    <td><input type="number" class="form-control"  name="ammount[]" value="{{old('ammount')[($key +1)]}}"  placeholder="xxxx" ></td>
+                    <td><input type="number" step="0.01" class="form-control"  name="ammount[]" value="{{old('ammount')[($key +1)]}}"  placeholder="xxxx" ></td>
                     <td><input type="text" class="form-control" data-input='measure' value="{{old('inputMeasure')[($key +1)]}}" name="inputMeasure[]" readonly></td>
                     <td><input type="text" class="form-control" data-input='cost' value="{{old('inputCost')[($key +1)]}}" name="inputCost[]" readonly></td>
 
@@ -185,7 +185,7 @@
                       @endforeach
                     </select>
                   </td>
-                  <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{old('ammount[]')}}" placeholder="xxxx" ></td>
+                  <td><input type="number" step="0.01" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{old('ammount[]')}}" placeholder="xxxx" ></td>
                   <td><input type="text" class="form-control" data-input='measure' name="inputMeasure[]" readonly></td>
                   <td><input type="text" class="form-control" data-input='cost' name="inputCost[]" readonly></td>
 

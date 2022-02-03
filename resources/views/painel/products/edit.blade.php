@@ -84,7 +84,7 @@
         
           <label class="col-form-label col-sm-3">Preço de venda</label>
           <div class="col-sm-3">
-            <input type="number" class="form-control @error('sell') is-invalid @enderror" id="sell" name="sell" value="{{$product->sell}}" placeholder="xx,xx">
+            <input type="number" step="0.01" class="form-control @error('sell') is-invalid @enderror" id="sell" name="sell" value="{{$product->sell}}" placeholder="xx,xx">
           </div>
 
           <label class="col-form-label offset-md-1 offset-sm-1 col-md-2 col-sm-2">Preço Custo</label>
@@ -142,7 +142,7 @@
                       <option value="{{$item->id_item}}" selected disabled >{{$item->item}}</option>
                     </select>
                   </td>
-                <td><input type="number" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{$item->ammount}}" placeholder="xxxx" readonly></td>
+                <td><input type="number" step="0.01" class="form-control @error('ammount[]') is-invalid @enderror"  name="ammount[]" value="{{$item->ammount}}" placeholder="xxxx" readonly></td>
                 <td><input type="text" class="form-control" data-input='measure' value="{{$item->measure}}" name="inputMeasure[]" readonly></td>
                 <td><input type="text" class="form-control" data-input='cost' value="R$ {{floatval($item->unity_cost)*floatval($item->ammount)}}" name="inputMeasure[]" readonly></td>
                 </tr>

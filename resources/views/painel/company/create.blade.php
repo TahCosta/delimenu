@@ -59,7 +59,7 @@
 
       <label class="col-form-label col-sm-3">Cnpj</label>
       <div class="col-sm-9">
-        <input type="number" class="form-control @error('cnpj') is-invalid @enderror" id="cnpj" name="cnpj" value="{{old('cnpj')}}" placeholder="11.111.111/1111-11">
+        <input type="text" class="form-control @error('cnpj') is-invalid @enderror" id="cnpj" name="cnpj" value="{{old('cnpj')}}" placeholder="11.111.111/1111-11">
       </div>
 
   </div>
@@ -68,7 +68,7 @@
         
           <label class="col-form-label col-sm-3">Telefone</label>
           <div class="col-sm-9">
-            <input type="tel" class="form-control @error('phone') is-invalid @enderror" value="{{old('phone')}}" id="phone" name="phone" placeholder="Telefone">
+            <input type="text" class="form-control @error('phone') is-invalid @enderror" value="{{old('phone')}}" id="phone" name="phone" placeholder="Telefone">
           </div>
         
     </div>      
