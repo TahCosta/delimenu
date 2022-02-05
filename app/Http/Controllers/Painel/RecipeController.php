@@ -198,12 +198,19 @@ class RecipeController extends Controller
         $loggedId = intval(Auth::id());
         $user = User::find($loggedId);
         $column = $where = '';
+        $inputs = Input::find($id);
         if(!is_null($user->company_id)){
             $column = 'company_id';
             $where = $user->company_id;
+            if($inputs->company_id !== $where || $inputs->type !== 0){
+                return redirect()->route('recipes.index');  
+            }
         }else{
             $column = 'user_id';
             $where = $loggedId;
+            if($inputs->user_id !== $where || $inputs->type !== 0){
+                return redirect()->route('recipes.index');  
+            }
         }
         
             $recipes = DB::table('inputs')
@@ -211,7 +218,7 @@ class RecipeController extends Controller
             ->select('item','recipes.ammount as ammount','id_item','measure','unity_cost')
             ->whereNotNull('recipes.id_item')
             ->where('recipes.id_input','=',$id)
-            ->where('inputs.type', '=',0)
+            ->where('inputs.type', '=',1)
             ->where('inputs.'.$column,'=',$where)->get();
 
             $item = Input::where('id','=',intval($id))
@@ -254,7 +261,7 @@ class RecipeController extends Controller
             'pack_cost' => ['required', 'string'],
             'category' => ['integer'],
             'yield' => ['required','numeric'],
-            'preparation' => ['string']
+            'preparation' => ['nullable','string']
         ]);
 
 
@@ -282,8 +289,19 @@ class RecipeController extends Controller
     public function destroy($id)
     {
         if(!empty($id)){
+            $loggedId = intval(Auth::id());
+            $user = User::find($loggedId);
             $recipe = Recipe::find($id);
             $input = Input::where('id','=',$recipe->id_input);
+            if(is_null($user->company_id)){
+                if($input->user_id !== $loggedId){
+                    return redirect()->route('recipes.index');
+                }
+            }else{
+                if($input->company_id !== $user->company_id){
+                    return redirect()->route('recipes.index');
+                }
+            }
             $input->delete();
             $recipe->delete();
         }

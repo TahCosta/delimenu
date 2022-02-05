@@ -18,9 +18,7 @@ class CreateOrdersTable extends Migration
             $table->string('order_id');
             $table->string('op'); //tipo de entrega
             $table->integer('origin_id');
-            $table->integer('item_id');
-            $table->integer('amount');
-            $table->integer('customer_id');
+            $table->integer('customer_id')->nullable();
             $table->double('purchase', 15, 2);
             $table->double('discount', 6, 3);
             $table->double('delivery_fee', 6, 3);

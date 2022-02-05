@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePaymethodsTable extends Migration
+class CreateDeliveriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,15 @@ class CreatePaymethodsTable extends Migration
      */
     public function up()
     {
-        Schema::create('paymethods', function (Blueprint $table) {
+        Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->decimal('tax', 6, 3);
-            $table->integer('receipt_time')->nullable();
-            $table->string('receipt_day')->nullable();
-            $table->decimal('management_tax', 10, 2);
+            $table->string('merchant_id')->nullable();
+            $table->text('access_token')->nullable();
+            $table->text('refresh_token')->nullable();
+            $table->string('authorization')->nullable();
+            $table->string('userCode')->nullable();
+            $table->dateTime('expiration');
+            $table->string('type');
             $table->integer('company_id');
             $table->integer('user_id');
             $table->timestamps();
@@ -33,6 +35,6 @@ class CreatePaymethodsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('paymethods');
+        Schema::dropIfExists('deliveries');
     }
 }

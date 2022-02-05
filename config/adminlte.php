@@ -298,16 +298,15 @@ return [
         [
             'text'        => 'Delivery',
             'icon'        => 'fas fa-fw fa-archive',
-            'can'         => 'edit',
             'submenu'     => [
-                [
-                    'text'        => 'Pedidos',
-                    'url'         => 'painel/delivery/orders',
-                    'icon'        => 'fas fa-fw fa-chevron-right',
-                ], 
                 [
                     'text'        => 'Painel Delivery',
                     'url'         => 'painel/delivery',
+                    'icon'        => 'fas fa-fw fa-chevron-right',
+                ], 
+                [
+                    'text'        => 'Pedidos',
+                    'url'         => 'painel/delivery/orders',
                     'icon'        => 'fas fa-fw fa-chevron-right',
                 ], 
             ],
@@ -319,9 +318,15 @@ return [
         ],
         [
             'text'        => 'Configurações',
-            'url'         => 'painel/settings',
             'icon'        => 'fas fa-fw fa-cogs',
-            'can'         => 'edit-company',
+            'submenu'     => [
+                [
+                    'text'        => 'Integração Ifood',
+                    'url'         => 'painel/config',
+                    'icon'        => 'fas fa-fw fa-chevron-right',
+                ], 
+            ],
+         
         ],
 
         ['header' => 'Minha Conta'],
@@ -331,7 +336,7 @@ return [
             'icon' => 'fas fa-fw fa-user',
         ],
         [
-            'text'        => 'Minha Empresa',
+            'text'        => 'Empresa',
             'url'         => 'painel/company',
             'icon'        => 'fas fa-fw fa-store-alt',
             

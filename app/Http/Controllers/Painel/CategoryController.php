@@ -149,8 +149,19 @@ class CategoryController extends Controller
      */
     public function edit($id)
     {
+        $loggedId = intval(Auth::id());
+        $user = User::find($loggedId);
         $category = Category::find($id);
         if ($category) {
+            if(is_null($user->company_id)){
+                if($category->user_id !== $loggedId){
+                    return redirect()->route('category.index'); 
+                }
+            }else{
+                if($category->company_id !== $user->company_id){
+                    return redirect()->route('category.index'); 
+                }
+            }
             return view('painel.categories.edit', [
                 'category' => $category
             ]);
@@ -206,7 +217,20 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         if(!empty($id)){
+            $loggedId = intval(Auth::id());
+            $user = User::find($loggedId);
             $category = Category::find($id);
+            if ($category) {
+                if(is_null($user->company_id)){
+                    if($category->user_id !== $loggedId){
+                        return redirect()->route('category.index'); 
+                    }
+                }else{
+                    if($category->company_id !== $user->company_id){
+                        return redirect()->route('category.index'); 
+                    }
+                }
+            }
             $category->delete();
         }
         return redirect()->route('category.index');

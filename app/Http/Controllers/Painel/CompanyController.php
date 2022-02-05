@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Input;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -86,9 +89,22 @@ class CompanyController extends Controller
             $newCompany->plan = 'free';
             $newCompany->phone = $data['phone'];
             $newCompany->save();
+
             $user = User::find($loggedId);
             $user->company_id = $newCompany->id;
             $user->save();
+
+            $inputs = Input::where('user_id','=',$loggedId);
+            $inputs->category_id = $newCompany->id;
+            $inputs->save();
+
+            $products = Product::where('user_id','=',$loggedId);
+            $products->category_id = $newCompany->id;
+            $products->save();
+
+            $category = Category::where('user_id','=',$loggedId);
+            $category->category_id = $newCompany->id;
+            $category->save();
         }
 
         return redirect()->route('company')

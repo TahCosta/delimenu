@@ -17,12 +17,12 @@ class CreateOriginTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('type');
-            $table->decimal('tax', 6, 3);
-            $table->integer('receipt_time');
-            $table->string('receipt_day');
-            $table->integer('tuition');
-            $table->integer('tuition_min');
-            $table->integer('company_id')->nullable();
+            $table->decimal('tax', 6, 3)->nullable();
+            $table->integer('receipt_time')->nullable();
+            $table->string('receipt_day')->nullable();
+            $table->integer('tuition')->nullable();
+            $table->integer('tuition_min')->nullable();
+            $table->integer('company_id');
             $table->integer('user_id');
             $table->timestamps();
         });

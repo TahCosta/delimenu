@@ -162,16 +162,6 @@ class InputController extends Controller
             ->with('warning', 'Informações salvas com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -181,17 +171,27 @@ class InputController extends Controller
      */
     public function edit($id)
     {
+        $loggedId = intval(Auth::id());
+        $user = User::find($loggedId);
         $input = Input::find($id);
-        if ($input) {
 
-            $loggedId = intval(Auth::id());
-            $user = User::find($loggedId);
+      
+
+        if ($input) {            
             if(is_null($user->company_id)){
+                if($input->user_id !== $loggedId || $input->type !== 1){
+                    return redirect()->route('inputs.index');   
+                }
+
                 $categories = Category::where('type', '=', 'input')
                 ->where('user_id','=',$loggedId)                
                 ->get();
                 $providers = Provider::where('user_id','=',$loggedId)->get();
             }else{
+                if($input->company_id !== $user->company_id || $input->type !== 1){
+                    return redirect()->route('inputs.index');   
+                }
+
                 $categories = Category::where('type', '=', 'input')
                 ->where('company_id','=',$user->company_id)                
                 ->get();
@@ -314,7 +314,18 @@ class InputController extends Controller
     public function destroy($id)
     {
         if(!empty($id)){
+            $loggedId = intval(Auth::id());
+            $user = User::find($loggedId);
             $input = Input::find($id);
+            if(is_null($user->company_id)){
+                if($input->user_id !== $loggedId || $input->type !== 1){
+                    return redirect()->route('inputs.index');   
+                }
+            }else{
+                if($input->company_id !== $user->company_id || $input->type !== 1){
+                    return redirect()->route('inputs.index');   
+                }
+            }
             $input->delete();
             Stock::where('item_id', '=', $id)->delete();
 

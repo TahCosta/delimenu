@@ -175,6 +175,9 @@ class ProductController extends Controller
         $product = Product::where('id','=',intval($id))
         ->where('products.user_id','=',$loggedId)->first();
         if(is_null($user->company_id)){
+            if($product->user_id !== $loggedId){
+                return redirect()->route('products.index');   
+            }
             $inputs = DB::table('inputs')
             ->leftJoin('recipes', 'inputs.id', '=', 'recipes.id_item')
             ->select('item','recipes.ammount as ammount','id_item','measure','unity_cost')
@@ -184,6 +187,9 @@ class ProductController extends Controller
             ->where('user_id','=',$loggedId)->get();
            
         }else{
+            if($product->company_id !== $user->company_id){
+                return redirect()->route('products.index');   
+            }
             $inputs = DB::table('inputs')
             ->leftJoin('recipes', 'inputs.id', '=', 'recipes.id_item')
             ->select('item','recipes.ammount as ammount','id_item','measure','unity_cost')
@@ -251,7 +257,18 @@ class ProductController extends Controller
     public function destroy($id)
     {
         if(!empty($id)){
+            $loggedId = intval(Auth::id());
+            $user = User::find($loggedId);
             $product = Product::find($id);
+            if(is_null($user->company_id)){
+                if($product->user_id !== $loggedId){
+                    return redirect()->route('products.index');
+                }
+            }else{
+                if($product->company_id !== $user->company_id){
+                    return redirect()->route('products.index');
+                }
+            }
             $recipe = Recipe::where('id_input', '=',$id);
             $recipe->delete();
             $product->delete();
