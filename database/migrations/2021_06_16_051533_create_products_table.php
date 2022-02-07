@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->string('product');
             $table->string('img')->nullable();
             $table->text('description')->nullable();
-            $table->integer('pdv')->nullable();
+            $table->string('pdv')->nullable();
             $table->integer('category_id')->nullable();
             $table->string('type'); //produto, complemento, recheio
             $table->integer('stock')->nullable();

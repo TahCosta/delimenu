@@ -89,7 +89,9 @@ class ProfileController extends Controller
                     ->withInput();
             }
             $user->name = $data['name'];
-            $user->password = Hash::make($data['password']);
+            if(!is_null($data['password'])){
+                $user->password = Hash::make($data['password']);
+            }
             $user->save();
 
             return redirect()->route('profile.index')

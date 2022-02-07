@@ -55,7 +55,7 @@
           </div>
           <div class="form-check-inline">
             <label class="form-check-label">
-            <input type="radio" class="form-check-input @error('measure') is-invalid @enderror" value="g" id="measure" name="measure" placeholder="measure"  @if($input->measure == 'g' || !old('measure')) checked @endif >Grama
+            <input type="radio" class="form-check-input @error('measure') is-invalid @enderror" value="g" id="measure" name="measure" placeholder="measure"  @if($input->measure == 'g') checked @endif >Grama
             </label>
           </div>
           <div class="form-check-inline">

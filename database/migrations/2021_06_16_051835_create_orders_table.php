@@ -16,12 +16,21 @@ class CreateOrdersTable extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_id');
-            $table->string('op'); //tipo de entrega
-            $table->integer('origin_id');
+            $table->string('display_id')->nullable();
+            $table->string('type'); //tipo do pedido
+            $table->integer('origin_id')->nullable();
+            $table->string('status'); //status do pedido
+            $table->integer('delivery_id')->nullable();
             $table->integer('customer_id')->nullable();
-            $table->double('purchase', 15, 2);
-            $table->double('discount', 6, 3);
+            $table->integer('paymethod_id')->nullable();
+            $table->double('total', 15, 2); //valor com descontos e tx entrega
+            $table->double('discount_store', 6, 3);
+            $table->double('discount_delivery', 6, 3);
+            $table->double('aditional_fees', 6, 3);
             $table->double('delivery_fee', 6, 3);
+            $table->dateTime('scheduled_start')->nullable();
+            $table->dateTime('delivered_at')->nullable();
+            $table->text('observations')->nullable();
             $table->integer('user_id');
             $table->integer('company_id')->nullable();
             $table->timestamps();
