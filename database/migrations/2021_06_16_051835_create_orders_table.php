@@ -20,17 +20,24 @@ class CreateOrdersTable extends Migration
             $table->string('type'); //tipo do pedido
             $table->integer('origin_id')->nullable();
             $table->string('status'); //status do pedido
+            $table->string('cancel_reason')->nullable(); 
+            $table->dateTime('cancel_expiration')->nullable();
             $table->integer('delivery_id')->nullable();
             $table->integer('customer_id')->nullable();
             $table->integer('paymethod_id')->nullable();
             $table->double('total', 15, 2); //valor com descontos e tx entrega
+            $table->double('prepaid', 15, 2)->nullable(); //valor pago online
+            $table->double('pending', 15, 2)->nullable(); //valor a ser pago na entrega
             $table->double('discount_store', 6, 3);
             $table->double('discount_delivery', 6, 3);
             $table->double('aditional_fees', 6, 3);
             $table->double('delivery_fee', 6, 3);
-            $table->dateTime('scheduled_start')->nullable();
-            $table->dateTime('delivered_at')->nullable();
+            $table->dateTime('preparation_start')->nullable();
+            $table->dateTime('delivery_time')->nullable();
+            $table->string('delivered_by')->nullable();
+            $table->string('delivery_type')->nullable();
             $table->text('observations')->nullable();
+            $table->text('extra_info')->nullable();
             $table->integer('user_id');
             $table->integer('company_id')->nullable();
             $table->timestamps();
